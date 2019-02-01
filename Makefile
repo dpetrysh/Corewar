@@ -10,59 +10,34 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = corewar
-# FILENAMES =
-HEADERS = corewar
-SRCDIR = ./src
-HDRDIR = ./includes
-ODIR = ./obj
-#CFILES = $(patsubst %, $(SRCDIR)/%.c, $(FILENAMES))
-#OFILES = $(patsubst %, $(ODIR)/%.o, $(FILENAMES))
-CFILES = $(patsubst %, %, $(wildcard $(addsuffix /*.c, $(SRCDIR))))
-OFILES = $(patsubst $(SRCDIR)/%.c, $(ODIR)/%.o, $(wildcard $(addsuffix /*.c, $(SRCDIR))))
-HFILES = $(patsubst %, $(HDRDIR)/%.h, $(HEADERS))
-LIBDIR = ./libft
-LIBFT = $(LIBDIR)/libft.a
-LIBHDRDIR = $(LIBDIR)/includes
-FLAGS = -Wall -Wextra -Werror -O3
+NAME_1 = asm
+NAME_2 = corewar
 
-RED = '\033[0;31m'
-GR = '\033[0;32m'
-NC = '\033[0m'
+ASM_DIR = ./asm_dir
+VM_DIR = ./vm
 
-all: $(NAME)
-
-$(NAME): $(ODIR) $(HFILES) $(OFILES) $(LIBFT) 
-	@gcc $(FLAGS) $(OFILES) $(LIBFT) -o $(NAME) -lncurses
-	@echo ${GR}"================= $(NAME) is up to date. ================="${NC}
-
-$(ODIR)/%.o: $(SRCDIR)/%.c
-	@gcc $(FLAGS) -o $@ -c $< -I$(HDRDIR) -I$(LIBHDRDIR)
-
-$(ODIR):
-	@mkdir -p $(ODIR)
-
-$(LIBFT):
-	@make -C $(LIBDIR)
+all:
+	@make -C $(ASM_DIR)
+	@cp $(ASM_DIR)/$(NAME_1) .
+	@make -C $(VM_DIR)
+	@cp $(VM_DIR)/$(NAME_2) .
 
 norm:
-	@echo ${RED}[Checking the $(NAME) NORM]${NC}
-	@norminette $(CFILES) $(HFILES)
+	@make norm -C $(ASM_DIR)
+	@make norm -C $(VM_DIR)
 
-fnorm: norm
-	@make norm -C ./libft
-
-echo:
-	@echo $(HFILES)
-	@echo $(HEADERS)
-	@echo $(HDRDIR)
+fnorm:
+	@make fnorm -C $(ASM_DIR)
+	@make fnorm -C $(VM_DIR)
 
 clean:
-	@rm -Rf $(ODIR)
-	@make clean -C $(LIBDIR)
+	@make clean -C $(ASM_DIR)
+	@make clean -C $(VM_DIR)
 
 fclean: clean
-	@/bin/rm -f $(NAME)
-	@make fclean -C $(LIBDIR)
+	@make fclean -C $(ASM_DIR)
+	@make fclean -C $(VM_DIR)
+	@/bin/rm -f $(NAME_1)
+	@/bin/rm -f $(NAME_2)
 
 re: fclean all
